@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "alwaysStrict": true,
+        "noImplicitAny": true,
+        "sourceMap": true,
+        "noImplicitThis": true,
+        "noImplicitReturns": true,
+        "strictNullChecks": true
+    },
+    "files": [
+        "scanner.ts",
+        "parser.ts",
+        "test.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}
