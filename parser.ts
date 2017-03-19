@@ -60,15 +60,19 @@ export function parseView(): ViewNode {
     nextToken();
     if (token() !== SyntaxKind.IndentationToken && countIndentation(tokenValue())) error("Expected no indentation.");
 
+    let dataType: string = 'SyncData';
+    let classNames: string[] = [];
     let styles: MemberStyle[] = [];
     let members: MemberNode[] = [];
     let functions: MemberFunction[] = [];
     let properties: MemberProperties[] = [];
-    let classNames: string[] = [];
     while (!isViewTerminator(indentation)) {
+        if(token() === SyntaxKind.DataType) {
+            dataType = tokenValue();
+            nextToken();
+        } 
         if(token() === SyntaxKind.ClassNamesToken) {
             classNames.push(tokenValue());
-            console.log('classNames   ******************', classNames);
             nextToken();
         }
         if (token() !== SyntaxKind.IndentationToken) error('Expected Indentation');
@@ -89,8 +93,9 @@ export function parseView(): ViewNode {
     return {
         kind: NodeKind.View,
         name: name,
-        styles: styles,
+        dataType: dataType,
         classNames: classNames,
+        styles: styles,
         members: members,
         functions: functions,
         properties: properties
@@ -147,6 +152,7 @@ export interface CodeNode extends ProgNode {
 }
 
 export interface ViewNode extends ProgNode {
+    dataType: string;
     classNames: string[];
     styles: MemberStyle[];
     members: MemberNode[];

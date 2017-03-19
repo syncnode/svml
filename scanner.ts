@@ -21,7 +21,8 @@ export const enum SyntaxKind {
 	MultiLineCommentTrivia,
 	DollarToken,
 	AtToken,
-	ClassNamesToken
+	ClassNamesToken,
+	DataType
 }
 
 export interface Scanner {
@@ -143,6 +144,9 @@ export function createScanner(text: string = '', start: number = 0, length?: num
 				case CharacterCodes.openBracket:
 					tokenValue = scanBetween(CharacterCodes.openBracket, CharacterCodes.closeBracket);
 					return token = SyntaxKind.ClassNamesToken;
+				case CharacterCodes.lessThan:
+					tokenValue = scanBetween(CharacterCodes.lessThan, CharacterCodes.greaterThan);
+					return token = SyntaxKind.DataType;
 				case CharacterCodes.comma:
 					pos++;
 					return token = SyntaxKind.CommaToken;

@@ -4,14 +4,6 @@ import * as chokidar from "chokidar";
 import * as fs from "fs";
 import { parse, NodeKind, ProgNode, CodeNode, ViewNode, MemberNode, MemberStyle } from "./parser"
 
-let watchPath = 'c:\\websites\\svml\\test-app\\app\\client\\src';
-
-chokidar.watch(watchPath, { depth: 99 }).on('change', (filePath) => {
-    if (filePath.match(/\.svml$/i) !== null) {
-        console.log('SVML file changed ', filePath);
-        processFile(filePath);
-    };
-});
 
 function buildClassName(member: MemberNode): string {
     let className = '';
@@ -79,7 +71,7 @@ new SyncReloader().start();
 }
 
 function emitView(view: ViewNode, result: string): string {
-    result += `export class ${view.name} extends SyncView<SyncData> {\n`;
+    result += `export class ${view.name} extends SyncView<${view.dataType}> {\n`;
     view.properties.forEach((property) => {
         result += property.text + '\n ';
     });
@@ -141,6 +133,7 @@ function emitView(view: ViewNode, result: string): string {
 
 
 function processFile(filePath: string) {
+    console.log('Processing:', filePath);
     fs.readFile(filePath, function read(err, data) {
         if (err) {
             throw err;
@@ -149,15 +142,26 @@ function processFile(filePath: string) {
         try {
             let prog = parse(data.toString());
             let transpiled = emit(prog);
-            let path = 'c:\\websites\\svml\\test-app\\app\\client\\src\\Main.ts';
+            let path = filePath.replace('.svml', '.ts');
             fs.writeFile(path, transpiled);
-            //fs.writeFile(path + filePath.replace('.svml', '.ts'), result);
-        } catch(msg) {
+        } catch (msg) {
             console.error(msg)
         }
     });
 }
 
+if (process.argv.length > 2) {
+    let watchPath = process.argv[2];
+    chokidar.watch(watchPath, { depth: 99 }).on('change', (filePath) => {
+        if (filePath.match(/\.svml$/i) !== null) {
+            console.log('SVML file changed ', filePath);
+            processFile(filePath);
+        };
+    });
 
-processFile(watchPath + '\\Main.svml');
-console.log('Watching SVML Files...');
+    //processFile(process.argv[2]);
+    console.log('Watching SVML Files at ' + watchPath + '...');
+} else {
+    console.log('Watch path required.');
+}
+

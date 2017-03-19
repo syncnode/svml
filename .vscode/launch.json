@@ -12,7 +12,8 @@
             "runtimeArgs": [
                 "--debug=5858"
             ],
-            "program": "${workspaceRoot}/test.js",
+            "program": "${workspaceRoot}/index.js",
+            "args": ["../test-app/app/client/src"],
             "restart": true,
             "port": 5858,
             "console": "integratedTerminal",

@@ -4,14 +4,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var chokidar = require("chokidar");
 var fs = require("fs");
 var parser_1 = require("./parser");
-var watchPath = 'c:\\websites\\svml\\test-app\\app\\client\\src';
-chokidar.watch(watchPath, { depth: 99 }).on('change', function (filePath) {
-    if (filePath.match(/\.svml$/i) !== null) {
-        console.log('SVML file changed ', filePath);
-        processFile(filePath);
-    }
-    ;
-});
 function buildClassName(member) {
     var className = '';
     member.styles.forEach(function (style) {
@@ -63,7 +55,7 @@ function emit(prog) {
     return result;
 }
 function emitView(view, result) {
-    result += "export class " + view.name + " extends SyncView<SyncData> {\n";
+    result += "export class " + view.name + " extends SyncView<" + view.dataType + "> {\n";
     view.properties.forEach(function (property) {
         result += property.text + '\n ';
     });
@@ -118,6 +110,7 @@ function emitView(view, result) {
     return result;
 }
 function processFile(filePath) {
+    console.log('Processing:', filePath);
     fs.readFile(filePath, function read(err, data) {
         if (err) {
             throw err;
@@ -125,15 +118,27 @@ function processFile(filePath) {
         try {
             var prog = parser_1.parse(data.toString());
             var transpiled = emit(prog);
-            var path = 'c:\\websites\\svml\\test-app\\app\\client\\src\\Main.ts';
+            var path = filePath.replace('.svml', '.ts');
             fs.writeFile(path, transpiled);
-            //fs.writeFile(path + filePath.replace('.svml', '.ts'), result);
         }
         catch (msg) {
             console.error(msg);
         }
     });
 }
-processFile(watchPath + '\\Main.svml');
-console.log('Watching SVML Files...');
-//# sourceMappingURL=test.js.map
+if (process.argv.length > 2) {
+    var watchPath = process.argv[2];
+    chokidar.watch(watchPath, { depth: 99 }).on('change', function (filePath) {
+        if (filePath.match(/\.svml$/i) !== null) {
+            console.log('SVML file changed ', filePath);
+            processFile(filePath);
+        }
+        ;
+    });
+    //processFile(process.argv[2]);
+    console.log('Watching SVML Files at ' + watchPath + '...');
+}
+else {
+    console.log('Watch path required.');
+}
+//# sourceMappingURL=index.js.map

@@ -49,15 +49,19 @@ function parseView() {
     nextToken();
     if (token() !== 5 /* IndentationToken */ && countIndentation(tokenValue()))
         error("Expected no indentation.");
+    var dataType = 'SyncData';
+    var classNames = [];
     var styles = [];
     var members = [];
     var functions = [];
     var properties = [];
-    var classNames = [];
     while (!isViewTerminator(indentation)) {
+        if (token() === 20 /* DataType */) {
+            dataType = tokenValue();
+            nextToken();
+        }
         if (token() === 19 /* ClassNamesToken */) {
             classNames.push(tokenValue());
-            console.log('classNames   ******************', classNames);
             nextToken();
         }
         if (token() !== 5 /* IndentationToken */)
@@ -79,8 +83,9 @@ function parseView() {
     return {
         kind: NodeKind.View,
         name: name,
-        styles: styles,
+        dataType: dataType,
         classNames: classNames,
+        styles: styles,
         members: members,
         functions: functions,
         properties: properties

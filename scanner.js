@@ -108,6 +108,9 @@ function createScanner(text, start, length) {
                 case 91 /* openBracket */:
                     tokenValue = scanBetween(91 /* openBracket */, 93 /* closeBracket */);
                     return token = 19 /* ClassNamesToken */;
+                case 60 /* lessThan */:
+                    tokenValue = scanBetween(60 /* lessThan */, 62 /* greaterThan */);
+                    return token = 20 /* DataType */;
                 case 44 /* comma */:
                     pos++;
                     return token = 8 /* CommaToken */;
