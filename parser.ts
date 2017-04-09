@@ -61,6 +61,7 @@ export function parseView(): ViewNode {
     if (token() !== SyntaxKind.IndentationToken && countIndentation(tokenValue())) error("Expected no indentation.");
 
     let dataType: string = 'SyncData';
+    let defaultOptions: string = '{}';
     let classNames: string[] = [];
     let styles: MemberStyle[] = [];
     let members: MemberNode[] = [];
@@ -69,6 +70,11 @@ export function parseView(): ViewNode {
     while (!isViewTerminator(indentation)) {
         if(token() === SyntaxKind.DataType) {
             dataType = tokenValue();
+            nextToken();
+        } 
+        if(token() === SyntaxKind.ArgumentsToken) {
+            defaultOptions = tokenValue();
+            console.log('defaultoptions', defaultOptions);
             nextToken();
         } 
         if(token() === SyntaxKind.ClassNamesToken) {
@@ -87,13 +93,14 @@ export function parseView(): ViewNode {
             parseMemberDeclaration(memberIndentation, classNames, styles, members, functions, properties);
         }
     }
-    console.log('end view');
-    nextToken();
+    console.log('end view2');
+    if(token() !== SyntaxKind.CodeToken) nextToken();
 
     return {
         kind: NodeKind.View,
         name: name,
         dataType: dataType,
+        defaultOptions: defaultOptions,
         classNames: classNames,
         styles: styles,
         members: members,
@@ -124,6 +131,7 @@ export function parseList() {
 
 export function isViewTerminator(indentation: number): boolean {
     if (token() === SyntaxKind.EndOfFileToken) return true;
+    if (token() === SyntaxKind.CodeToken) return true;
     return token() === SyntaxKind.IndentationToken && countIndentation(tokenValue()) <= indentation;
 }
 
@@ -153,6 +161,7 @@ export interface CodeNode extends ProgNode {
 
 export interface ViewNode extends ProgNode {
     dataType: string;
+    defaultOptions: any;
     classNames: string[];
     styles: MemberStyle[];
     members: MemberNode[];

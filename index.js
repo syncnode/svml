@@ -9,7 +9,7 @@ function buildClassName(member) {
     member.styles.forEach(function (style) {
         className += " " + member.tag + "_" + member.name + "_" + style.name;
     });
-    return className;
+    return member.classNames + className;
 }
 function emitTagMember(member) {
     var options = {
@@ -26,8 +26,8 @@ function emitViewMember(member) {
     return result;
 }
 function emit(prog) {
-    var result = 'import { SyncNode, SyncNodeSocket, SyncData } from "c:\\\\websites\\\\svml\\\\test-app\\\\app\\\\client\\\\src\\\\SyncNode\\\\SyncNode"\n';
-    result += 'import { SyncView, SyncApp, SyncList, SyncUtils, SyncReloader } from ".\\\\SyncNode\\\\SyncView"\n\n';
+    var result = 'import { SyncNode, SyncNodeSocket, SyncData } from "./SyncNode/SyncNode"\n';
+    result += 'import { SyncView, SyncApp, SyncList, SyncUtils, SyncReloader } from "./SyncNode/SyncView"\n\n';
     prog.forEach(function (node) {
         switch (node.kind) {
             case parser_1.NodeKind.Code:
@@ -51,7 +51,6 @@ function emit(prog) {
             });
         }
     });
-    result += "\nlet app = new SyncApp<SyncData>(new MainView());\napp.start();\n\nnew SyncReloader().start();\n";
     return result;
 }
 function emitView(view, result) {
@@ -64,6 +63,7 @@ function emitView(view, result) {
     });
     result += "\tconstructor(options: any = {}) {\n";
     result += "\t\tsuper(options);\n";
+    result += "\t\tthis.options = SyncUtils.mergeMap(" + view.defaultOptions + ", options);\n";
     result += "\t\tthis.el.className += ' " + view.classNames + "';\n";
     view.styles.forEach(function (style) {
         result += "\t\tthis.el.className += ' " + view.name + "_" + style.name + "';\n";

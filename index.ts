@@ -10,7 +10,7 @@ function buildClassName(member: MemberNode): string {
     member.styles.forEach((style: MemberStyle) => {
         className += ` ${member.tag}_${member.name}_${style.name}`;
     });
-    return className;
+    return member.classNames + className;
 }
 
 function emitTagMember(member: MemberNode) {
@@ -31,8 +31,8 @@ function emitViewMember(member: MemberNode) {
 }
 
 function emit(prog: ProgNode[]) {
-    let result = 'import { SyncNode, SyncNodeSocket, SyncData } from "c:\\\\websites\\\\svml\\\\test-app\\\\app\\\\client\\\\src\\\\SyncNode\\\\SyncNode"\n';
-    result += 'import { SyncView, SyncApp, SyncList, SyncUtils, SyncReloader } from ".\\\\SyncNode\\\\SyncView"\n\n';
+    let result = 'import { SyncNode, SyncNodeSocket, SyncData } from "./SyncNode/SyncNode"\n';
+    result += 'import { SyncView, SyncApp, SyncList, SyncUtils, SyncReloader } from "./SyncNode/SyncView"\n\n';
     prog.forEach((node) => {
         switch (node.kind) {
             case NodeKind.Code:
@@ -59,14 +59,6 @@ function emit(prog: ProgNode[]) {
     });
 
 
-
-    result += `
-let app = new SyncApp<SyncData>(new MainView());
-app.start();
-
-new SyncReloader().start();
-`;
-
     return result;
 }
 
@@ -80,6 +72,7 @@ function emitView(view: ViewNode, result: string): string {
     });
     result += `\tconstructor(options: any = {}) {\n`;
     result += `\t\tsuper(options);\n`;
+    result += `\t\tthis.options = SyncUtils.mergeMap(${view.defaultOptions}, options);\n`
     result += `\t\tthis.el.className += ' ${view.classNames}';\n`;
     view.styles.forEach((style) => {
         result += `\t\tthis.el.className += ' ${view.name}_${style.name}';\n`;

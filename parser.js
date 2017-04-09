@@ -50,6 +50,7 @@ function parseView() {
     if (token() !== 5 /* IndentationToken */ && countIndentation(tokenValue()))
         error("Expected no indentation.");
     var dataType = 'SyncData';
+    var defaultOptions = '{}';
     var classNames = [];
     var styles = [];
     var members = [];
@@ -58,6 +59,11 @@ function parseView() {
     while (!isViewTerminator(indentation)) {
         if (token() === 20 /* DataType */) {
             dataType = tokenValue();
+            nextToken();
+        }
+        if (token() === 12 /* ArgumentsToken */) {
+            defaultOptions = tokenValue();
+            console.log('defaultoptions', defaultOptions);
             nextToken();
         }
         if (token() === 19 /* ClassNamesToken */) {
@@ -78,12 +84,14 @@ function parseView() {
             parseMemberDeclaration(memberIndentation, classNames, styles, members, functions, properties);
         }
     }
-    console.log('end view');
-    nextToken();
+    console.log('end view2');
+    if (token() !== 13 /* CodeToken */)
+        nextToken();
     return {
         kind: NodeKind.View,
         name: name,
         dataType: dataType,
+        defaultOptions: defaultOptions,
         classNames: classNames,
         styles: styles,
         members: members,
@@ -113,6 +121,8 @@ function parseList() {
 exports.parseList = parseList;
 function isViewTerminator(indentation) {
     if (token() === 2 /* EndOfFileToken */)
+        return true;
+    if (token() === 13 /* CodeToken */)
         return true;
     return token() === 5 /* IndentationToken */ && countIndentation(tokenValue()) <= indentation;
 }

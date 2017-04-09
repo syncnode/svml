@@ -13,7 +13,7 @@
                 "--debug=5858"
             ],
             "program": "${workspaceRoot}/index.js",
-            "args": ["../test-app/app/client/src"],
+            "args": ["../specials/app/client/src"],
             "restart": true,
             "port": 5858,
             "console": "integratedTerminal",
