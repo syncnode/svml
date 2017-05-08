@@ -10,7 +10,7 @@ function buildClassName(member: MemberNode): string {
     member.styles.forEach((style: MemberStyle) => {
         className += ` ${member.tag}_${member.name}_${style.name}`;
     });
-    return className;
+    return member.classNames + className;
 }
 
 function emitTagMember(member: MemberNode) {

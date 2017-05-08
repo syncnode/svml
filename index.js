@@ -9,7 +9,7 @@ function buildClassName(member) {
     member.styles.forEach(function (style) {
         className += " " + member.tag + "_" + member.name + "_" + style.name;
     });
-    return className;
+    return member.classNames + className;
 }
 function emitTagMember(member) {
     var options = {

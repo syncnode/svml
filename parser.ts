@@ -92,8 +92,8 @@ export function parseView(): ViewNode {
             parseMemberDeclaration(memberIndentation, classNames, styles, members, functions, properties);
         }
     }
-    console.log('end view');
-    nextToken();
+    console.log('end view2');
+    if(token() !== SyntaxKind.CodeToken) nextToken();
 
     return {
         kind: NodeKind.View,
@@ -130,6 +130,7 @@ export function parseList() {
 
 export function isViewTerminator(indentation: number): boolean {
     if (token() === SyntaxKind.EndOfFileToken) return true;
+    if (token() === SyntaxKind.CodeToken) return true;
     return token() === SyntaxKind.IndentationToken && countIndentation(tokenValue()) <= indentation;
 }
 

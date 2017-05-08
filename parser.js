@@ -83,8 +83,9 @@ function parseView() {
             parseMemberDeclaration(memberIndentation, classNames, styles, members, functions, properties);
         }
     }
-    console.log('end view');
-    nextToken();
+    console.log('end view2');
+    if (token() !== 13 /* CodeToken */)
+        nextToken();
     return {
         kind: NodeKind.View,
         name: name,
@@ -119,6 +120,8 @@ function parseList() {
 exports.parseList = parseList;
 function isViewTerminator(indentation) {
     if (token() === 2 /* EndOfFileToken */)
+        return true;
+    if (token() === 13 /* CodeToken */)
         return true;
     return token() === 5 /* IndentationToken */ && countIndentation(tokenValue()) <= indentation;
 }
