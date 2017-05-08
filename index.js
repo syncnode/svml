@@ -1,5 +1,5 @@
-/// <reference path="./node_modules/@types/node/index.d.ts" />
 "use strict";
+/// <reference path="./node_modules/@types/node/index.d.ts" />
 Object.defineProperty(exports, "__esModule", { value: true });
 var chokidar = require("chokidar");
 var fs = require("fs");
@@ -26,8 +26,8 @@ function emitViewMember(member) {
     return result;
 }
 function emit(prog) {
-    var result = 'import { SyncNode, SyncNodeSocket, SyncData } from "c:\\\\websites\\\\svml\\\\test-app\\\\app\\\\client\\\\src\\\\SyncNode\\\\SyncNode"\n';
-    result += 'import { SyncView, SyncApp, SyncList, SyncUtils, SyncReloader } from ".\\\\SyncNode\\\\SyncView"\n\n';
+    var result = 'import { SyncNode } from "../../modules/syncnode/syncnode"\n';
+    result += 'import { SyncView, SyncList, SyncUtils } from "./syncnode-view"\n\n';
     prog.forEach(function (node) {
         switch (node.kind) {
             case parser_1.NodeKind.Code:
@@ -51,7 +51,6 @@ function emit(prog) {
             });
         }
     });
-    result += "\nlet app = new SyncApp<SyncData>(new MainView());\napp.start();\n\nnew SyncReloader().start();\n";
     return result;
 }
 function emitView(view, result) {
@@ -63,7 +62,7 @@ function emitView(view, result) {
         result += member.type === 'view' ? emitViewMember(member) : emitTagMember(member);
     });
     result += "\tconstructor(options: any = {}) {\n";
-    result += "\t\tsuper(options);\n";
+    result += "\t\tsuper(SyncUtils.mergeMap(options, " + view.options + "));\n";
     result += "\t\tthis.el.className += ' " + view.classNames + "';\n";
     view.styles.forEach(function (style) {
         result += "\t\tthis.el.className += ' " + view.name + "_" + style.name + "';\n";

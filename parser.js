@@ -49,7 +49,8 @@ function parseView() {
     nextToken();
     if (token() !== 5 /* IndentationToken */ && countIndentation(tokenValue()))
         error("Expected no indentation.");
-    var dataType = 'SyncData';
+    var dataType = 'SyncNode';
+    var options = '{}';
     var classNames = [];
     var styles = [];
     var members = [];
@@ -58,6 +59,10 @@ function parseView() {
     while (!isViewTerminator(indentation)) {
         if (token() === 20 /* DataType */) {
             dataType = tokenValue();
+            nextToken();
+        }
+        if (token() == 12 /* ArgumentsToken */) {
+            options = tokenValue();
             nextToken();
         }
         if (token() === 19 /* ClassNamesToken */) {
@@ -84,6 +89,7 @@ function parseView() {
         kind: NodeKind.View,
         name: name,
         dataType: dataType,
+        options: options,
         classNames: classNames,
         styles: styles,
         members: members,
