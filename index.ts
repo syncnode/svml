@@ -31,8 +31,8 @@ function emitViewMember(member: MemberNode) {
 }
 
 function emit(prog: ProgNode[]) {
-    let result = 'import { SyncNode } from "../../modules/syncnode/syncnode"\n';
-    result += 'import { SyncView, SyncList, SyncUtils } from "./syncnode-view"\n\n';
+    let result = 'import { SyncNode } from "syncnode-common";\n';
+    result += 'import { SyncView, SyncList, SyncUtils } from "syncnode-client";\n\n';
     prog.forEach((node) => {
         switch (node.kind) {
             case NodeKind.Code:
@@ -143,7 +143,7 @@ function processFile(filePath: string) {
 
 if (process.argv.length > 2) {
     let watchPath = process.argv[2];
-    chokidar.watch(watchPath, { depth: 99 }).on('change', (filePath) => {
+    chokidar.watch(watchPath, { depth: 99 }).on('change', (filePath: string) => {
         if (filePath.match(/\.svml$/i) !== null) {
             console.log('SVML file changed ', filePath);
             processFile(filePath);

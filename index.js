@@ -26,8 +26,8 @@ function emitViewMember(member) {
     return result;
 }
 function emit(prog) {
-    var result = 'import { SyncNode } from "../../modules/syncnode/syncnode"\n';
-    result += 'import { SyncView, SyncList, SyncUtils } from "./syncnode-view"\n\n';
+    var result = 'import { SyncNode } from "syncnode-common";\n';
+    result += 'import { SyncView, SyncList, SyncUtils } from "syncnode-client";\n\n';
     prog.forEach(function (node) {
         switch (node.kind) {
             case parser_1.NodeKind.Code:
