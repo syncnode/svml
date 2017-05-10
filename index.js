@@ -62,7 +62,7 @@ function emitView(view, result) {
         result += member.type === 'view' ? emitViewMember(member) : emitTagMember(member);
     });
     result += "\tconstructor(options: any = {}) {\n";
-    result += "\t\tsuper(SyncUtils.mergeMap(options, " + view.options + "));\n";
+    result += "\t\tsuper(SyncUtils.mergeMap(" + view.options + ", options));\n";
     result += "\t\tthis.el.className += ' " + view.classNames + "';\n";
     view.styles.forEach(function (style) {
         result += "\t\tthis.el.className += ' " + view.name + "_" + style.name + "';\n";
