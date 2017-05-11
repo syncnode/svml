@@ -91,6 +91,7 @@ function emitMember(member: MemberNode, result: string): string {
 
 function emitMemberDecleration(member: MemberNode, parent?: string): string {
     let result = member.type === 'view' ? emitViewMember(member, parent) : emitTagMember(member, parent);
+    if(member.members.length) console.log('----------------------', member.name, member.members)
     member.members.forEach((member2) => result += emitMemberDecleration(member2, member.name));
     return result;
 }
@@ -127,13 +128,24 @@ function emitView(view: ViewNode, result: string): string {
 
     result += `}\n\n`;
 
+    function emitStyle(member: MemberNode, style: MemberStyle): string {
+        let name = member.tag + '_' + member.name + '_' + style.name;
+        return `SyncView.addGlobalStyle('.${name}', \`${style.text}\`);\n`
+    }
+
+    function emitStyles(member: MemberNode): string {
+        let result = '';
+        member.styles.forEach((style) => {
+            result += emitStyle(member, style);
+        });
+        member.members.forEach((member2) => {
+            result += emitStyles(member2);
+        });
+        return result;
+    }
 
     view.members.forEach((member) => {
-        let name: string;
-        member.styles.forEach((style) => {
-            name = member.tag + '_' + member.name + '_' + style.name;
-            result += `SyncView.addGlobalStyle('.${name}', \`${style.text}\`);\n`
-        });
+        result += emitStyles(member);
     });
 
     return result;

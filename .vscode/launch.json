@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "node2",
+            "type": "node",
             "request": "launch",
             "name": "nodemon",
             "runtimeExecutable": "nodemon",
@@ -13,7 +13,7 @@
                 "--debug=5858"
             ],
             "program": "${workspaceRoot}/index.js",
-            "args": ["../specials/app/client/src"],
+            "args": ["../mrm/client/src"],
             "restart": true,
             "port": 5858,
             "console": "integratedTerminal",

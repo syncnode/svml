@@ -271,6 +271,7 @@ export function parseMemberPropertyDeclaration(indentation: number): MemberNode 
     let members: MemberNode[] = [];
     if (name === undefined) name = guidShort();
     nextToken();
+    let lastIndentation = 0;
     while (!isStatementTerminator(indentation)) {
         switch (token()) {
             case SyntaxKind.ClassNamesToken:
@@ -310,9 +311,11 @@ export function parseMemberPropertyDeclaration(indentation: number): MemberNode 
                 nextToken();
                 break;
             case SyntaxKind.HashIdentifierToken:
-                members.push(parseMemberPropertyDeclaration(indentation));
+                console.log('==================parsing member2', name, indentation, lastIndentation)
+                members.push(parseMemberPropertyDeclaration(lastIndentation));
                 break;
             case SyntaxKind.IndentationToken:
+                lastIndentation = countIndentation(tokenValue());
                 nextToken();
                 break;
             case SyntaxKind.Identifier:
@@ -326,7 +329,7 @@ export function parseMemberPropertyDeclaration(indentation: number): MemberNode 
                 break;
         }
     }
-    if(members.length > 0) console.log('#####################members!!!! ', members);
+    if(members.length) console.log('==================members', name, members)
     return {
         kind: NodeKind.Member,
         name: name,

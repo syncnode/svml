@@ -217,6 +217,7 @@ function parseMemberPropertyDeclaration(indentation) {
     if (name === undefined)
         name = guidShort();
     nextToken();
+    var lastIndentation = 0;
     while (!isStatementTerminator(indentation)) {
         switch (token()) {
             case 19 /* ClassNamesToken */:
@@ -256,9 +257,11 @@ function parseMemberPropertyDeclaration(indentation) {
                 nextToken();
                 break;
             case 3 /* HashIdentifierToken */:
-                members.push(parseMemberPropertyDeclaration(indentation));
+                console.log('==================parsing member2', name, indentation, lastIndentation);
+                members.push(parseMemberPropertyDeclaration(lastIndentation));
                 break;
             case 5 /* IndentationToken */:
+                lastIndentation = countIndentation(tokenValue());
                 nextToken();
                 break;
             case 1 /* Identifier */:
@@ -272,8 +275,8 @@ function parseMemberPropertyDeclaration(indentation) {
                 break;
         }
     }
-    if (members.length > 0)
-        console.log('#####################members!!!! ', members);
+    if (members.length)
+        console.log('==================members', name, members);
     return {
         kind: NodeKind.Member,
         name: name,

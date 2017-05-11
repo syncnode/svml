@@ -79,6 +79,8 @@ function emitMember(member, result) {
 }
 function emitMemberDecleration(member, parent) {
     var result = member.type === 'view' ? emitViewMember(member, parent) : emitTagMember(member, parent);
+    if (member.members.length)
+        console.log('----------------------', member.name, member.members);
     member.members.forEach(function (member2) { return result += emitMemberDecleration(member2, member.name); });
     return result;
 }
@@ -112,12 +114,22 @@ function emitView(view, result) {
         result += "}\n";
     });
     result += "}\n\n";
-    view.members.forEach(function (member) {
-        var name;
+    function emitStyle(member, style) {
+        var name = member.tag + '_' + member.name + '_' + style.name;
+        return "SyncView.addGlobalStyle('." + name + "', `" + style.text + "`);\n";
+    }
+    function emitStyles(member) {
+        var result = '';
         member.styles.forEach(function (style) {
-            name = member.tag + '_' + member.name + '_' + style.name;
-            result += "SyncView.addGlobalStyle('." + name + "', `" + style.text + "`);\n";
+            result += emitStyle(member, style);
         });
+        member.members.forEach(function (member2) {
+            result += emitStyles(member2);
+        });
+        return result;
+    }
+    view.members.forEach(function (member) {
+        result += emitStyles(member);
     });
     return result;
 }
