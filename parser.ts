@@ -177,6 +177,7 @@ export interface MemberNode extends ProgNode {
     styles: MemberStyle[];
     functions: MemberFunction[];
     bindings: MemberBinding[];
+    members: MemberNode[];
 }
 
 export interface MemberStyle extends ProgNode {
@@ -267,6 +268,7 @@ export function parseMemberPropertyDeclaration(indentation: number): MemberNode 
     let functions: MemberFunction[] = [];
     let styles: MemberStyle[] = [];
     let bindings: MemberBinding[] = [];
+    let members: MemberNode[] = [];
     if (name === undefined) name = guidShort();
     nextToken();
     while (!isStatementTerminator(indentation)) {
@@ -307,6 +309,9 @@ export function parseMemberPropertyDeclaration(indentation: number): MemberNode 
                 bindings.push(binding);
                 nextToken();
                 break;
+            case SyntaxKind.HashIdentifierToken:
+                members.push(parseMemberPropertyDeclaration(indentation));
+                break;
             case SyntaxKind.IndentationToken:
                 nextToken();
                 break;
@@ -321,6 +326,7 @@ export function parseMemberPropertyDeclaration(indentation: number): MemberNode 
                 break;
         }
     }
+    if(members.length > 0) console.log('#####################members!!!! ', members);
     return {
         kind: NodeKind.Member,
         name: name,
@@ -331,7 +337,8 @@ export function parseMemberPropertyDeclaration(indentation: number): MemberNode 
         innerHTML: innerHTML,
         styles: styles,
         functions: functions,
-        bindings: bindings
+        bindings: bindings,
+        members: members
     };
 }
 

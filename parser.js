@@ -213,6 +213,7 @@ function parseMemberPropertyDeclaration(indentation) {
     var functions = [];
     var styles = [];
     var bindings = [];
+    var members = [];
     if (name === undefined)
         name = guidShort();
     nextToken();
@@ -254,6 +255,9 @@ function parseMemberPropertyDeclaration(indentation) {
                 bindings.push(binding);
                 nextToken();
                 break;
+            case 3 /* HashIdentifierToken */:
+                members.push(parseMemberPropertyDeclaration(indentation));
+                break;
             case 5 /* IndentationToken */:
                 nextToken();
                 break;
@@ -268,6 +272,8 @@ function parseMemberPropertyDeclaration(indentation) {
                 break;
         }
     }
+    if (members.length > 0)
+        console.log('#####################members!!!! ', members);
     return {
         kind: NodeKind.Member,
         name: name,
@@ -278,7 +284,8 @@ function parseMemberPropertyDeclaration(indentation) {
         innerHTML: innerHTML,
         styles: styles,
         functions: functions,
-        bindings: bindings
+        bindings: bindings,
+        members: members
     };
 }
 exports.parseMemberPropertyDeclaration = parseMemberPropertyDeclaration;

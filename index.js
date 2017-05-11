@@ -11,18 +11,19 @@ function buildClassName(member) {
     });
     return member.classNames + className;
 }
-function emitTagMember(member) {
+function emitTagMember(member, parent) {
     var options = {
+        parent: parent,
         innerHTML: member.innerHTML,
-        className: buildClassName(member)
+        className: buildClassName(member),
     };
     member.classNames.forEach(function (str) { return options.className += ' ' + str; });
     var result = "\t" + member.name + " = this.add('" + member.tag + "', " + JSON.stringify(options) + ");\n";
     return result;
 }
-function emitViewMember(member) {
+function emitViewMember(member, parent) {
     var className = buildClassName(member);
-    var result = "\t" + member.name + " = this.addView(new " + member.tag + "(" + member.options + "), '" + className + "');\n";
+    var result = "\t" + member.name + " = this.addView(new " + member.tag + "(" + member.options + "), '" + className + "', '" + parent + "');\n";
     return result;
 }
 function emit(prog) {
@@ -53,13 +54,41 @@ function emit(prog) {
     });
     return result;
 }
+function emitMember(member, result) {
+    member.functions.filter(function (func) { return func.name.substr(0, 2) == 'on'; }).forEach(function (func) {
+        var name = func.name.substr(2, func.name.length - 2).toLowerCase();
+        switch (member.type) {
+            case 'tag':
+                result += "\t\tthis." + member.name + ".addEventListener('" + name + "', (" + func.args + ") => { " + func.code + " });\n";
+                break;
+            case 'view':
+                result += "\t\tthis." + member.name + ".on('" + name + "', (" + func.args + ") => { " + func.code + " });\n";
+                break;
+            default:
+                console.error('Unknown member type: ' + member.type);
+                break;
+        }
+    });
+    member.bindings.forEach(function (binding) {
+        result += "\t\tthis.addBinding('" + member.name + "', '" + binding.prop + "', '" + binding.value + "');\n";
+    });
+    member.members.forEach(function (member2) {
+        result = emitMember(member2, result);
+    });
+    return result;
+}
+function emitMemberDecleration(member, parent) {
+    var result = member.type === 'view' ? emitViewMember(member, parent) : emitTagMember(member, parent);
+    member.members.forEach(function (member2) { return result += emitMemberDecleration(member2, member.name); });
+    return result;
+}
 function emitView(view, result) {
     result += "export class " + view.name + " extends SyncView<" + view.dataType + "> {\n";
     view.properties.forEach(function (property) {
         result += property.text + '\n ';
     });
     view.members.forEach(function (member) {
-        result += member.type === 'view' ? emitViewMember(member) : emitTagMember(member);
+        result += emitMemberDecleration(member);
     });
     result += "\tconstructor(options: any = {}) {\n";
     result += "\t\tsuper(SyncUtils.mergeMap(" + view.options + ", options));\n";
@@ -74,23 +103,7 @@ function emitView(view, result) {
         }
     });
     view.members.forEach(function (member) {
-        member.functions.filter(function (func) { return func.name.substr(0, 2) == 'on'; }).forEach(function (func) {
-            var name = func.name.substr(2, func.name.length - 2).toLowerCase();
-            switch (member.type) {
-                case 'tag':
-                    result += "\t\tthis." + member.name + ".addEventListener('" + name + "', (" + func.args + ") => { " + func.code + " });\n";
-                    break;
-                case 'view':
-                    result += "\t\tthis." + member.name + ".on('" + name + "', (" + func.args + ") => { " + func.code + " });\n";
-                    break;
-                default:
-                    console.error('Unknown member type: ' + member.type);
-                    break;
-            }
-        });
-        member.bindings.forEach(function (binding) {
-            result += "\t\tthis.addBinding('" + member.name + "', '" + binding.prop + "', '" + binding.value + "');\n";
-        });
+        result = emitMember(member, result);
     });
     result += "\t}\n";
     view.functions.forEach(function (func) {

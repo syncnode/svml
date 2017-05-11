@@ -13,10 +13,11 @@ function buildClassName(member: MemberNode): string {
     return member.classNames + className;
 }
 
-function emitTagMember(member: MemberNode) {
+function emitTagMember(member: MemberNode, parent?: string) {
     const options = {
+        parent: parent,
         innerHTML: member.innerHTML,
-        className: buildClassName(member)
+        className: buildClassName(member),
     };
 
     member.classNames.forEach((str: string) => options.className += ' ' + str);
@@ -24,9 +25,9 @@ function emitTagMember(member: MemberNode) {
     return result;
 }
 
-function emitViewMember(member: MemberNode) {
+function emitViewMember(member: MemberNode, parent?: string) {
     const className = buildClassName(member);
-    let result = `\t${member.name} = this.addView(new ${member.tag}(${member.options}), '${className}');\n`;
+    let result = `\t${member.name} = this.addView(new ${member.tag}(${member.options}), '${className}', '${parent}');\n`;
     return result;
 }
 
@@ -61,13 +62,46 @@ function emit(prog: ProgNode[]) {
     return result;
 }
 
+function emitMember(member: MemberNode, result: string): string {
+    member.functions.filter(func => func.name.substr(0, 2) == 'on').forEach((func) => {
+        const name = func.name.substr(2, func.name.length - 2).toLowerCase();
+        switch (member.type) {
+            case 'tag':
+                result += `\t\tthis.${member.name}.addEventListener('${name}', (${func.args}) => { ${func.code} });\n`;
+                break;
+            case 'view':
+                result += `\t\tthis.${member.name}.on('${name}', (${func.args}) => { ${func.code} });\n`;
+                break;
+            default:
+                console.error('Unknown member type: ' + member.type);
+                break;
+        }
+    });
+
+    member.bindings.forEach((binding) => {
+        result += `\t\tthis.addBinding('${member.name}', '${binding.prop}', '${binding.value}');\n`;
+    });
+
+    member.members.forEach((member2) => {
+        result = emitMember(member2, result);
+    });
+
+    return result;
+}
+
+function emitMemberDecleration(member: MemberNode, parent?: string): string {
+    let result = member.type === 'view' ? emitViewMember(member, parent) : emitTagMember(member, parent);
+    member.members.forEach((member2) => result += emitMemberDecleration(member2, member.name));
+    return result;
+}
+
 function emitView(view: ViewNode, result: string): string {
     result += `export class ${view.name} extends SyncView<${view.dataType}> {\n`;
     view.properties.forEach((property) => {
         result += property.text + '\n ';
     });
     view.members.forEach((member) => {
-        result += member.type === 'view' ? emitViewMember(member) : emitTagMember(member);
+        result += emitMemberDecleration(member);
     });
     result += `\tconstructor(options: any = {}) {\n`;
     result += `\t\tsuper(SyncUtils.mergeMap(${view.options}, options));\n`;
@@ -82,24 +116,7 @@ function emitView(view: ViewNode, result: string): string {
         }
     });
     view.members.forEach((member) => {
-        member.functions.filter(func => func.name.substr(0, 2) == 'on').forEach((func) => {
-            const name = func.name.substr(2, func.name.length - 2).toLowerCase();
-            switch (member.type) {
-                case 'tag':
-                    result += `\t\tthis.${member.name}.addEventListener('${name}', (${func.args}) => { ${func.code} });\n`;
-                    break;
-                case 'view':
-                    result += `\t\tthis.${member.name}.on('${name}', (${func.args}) => { ${func.code} });\n`;
-                    break;
-                default:
-                    console.error('Unknown member type: ' + member.type);
-                    break;
-            }
-        });
-
-        member.bindings.forEach((binding) => {
-            result += `\t\tthis.addBinding('${member.name}', '${binding.prop}', '${binding.value}');\n`;
-        });
+        result = emitMember(member, result);
     });
     result += `\t}\n`;
     view.functions.forEach((func) => {
