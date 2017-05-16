@@ -27,7 +27,8 @@ function emitTagMember(member: MemberNode, parent?: string) {
 
 function emitViewMember(member: MemberNode, parent?: string) {
     const className = buildClassName(member);
-    let result = `\t${member.name} = this.addView(new ${member.tag}(${member.options}), '${className}', '${parent}');\n`;
+    parent = parent ? ('this.' + parent) : 'undefined';
+    let result = `\t${member.name} = this.addView(new ${member.tag}(${member.options}), '${className}', ${parent});\n`;
     return result;
 }
 

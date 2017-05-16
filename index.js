@@ -23,7 +23,8 @@ function emitTagMember(member, parent) {
 }
 function emitViewMember(member, parent) {
     var className = buildClassName(member);
-    var result = "\t" + member.name + " = this.addView(new " + member.tag + "(" + member.options + "), '" + className + "', '" + parent + "');\n";
+    parent = parent ? ('this.' + parent) : 'undefined';
+    var result = "\t" + member.name + " = this.addView(new " + member.tag + "(" + member.options + "), '" + className + "', " + parent + ");\n";
     return result;
 }
 function emit(prog) {
