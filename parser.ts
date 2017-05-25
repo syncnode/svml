@@ -23,7 +23,7 @@ function tokenValue(): string {
 }
 function nextToken() {
     currentToken = scanner.scan();
-    console.log('nextToken22', currentToken, tokenValue());
+    //console.log('nextToken22', currentToken, tokenValue());
 }
 
 export function parse(text: string): ProgNode[] {
@@ -92,7 +92,7 @@ export function parseView(): ViewNode {
             parseMemberDeclaration(memberIndentation, classNames, styles, members, functions, properties);
         }
     }
-    console.log('end view2');
+    //console.log('end view2');
     if(token() !== SyntaxKind.CodeToken) nextToken();
 
     return {
@@ -302,7 +302,7 @@ export function parseMemberPropertyDeclaration(indentation: number): MemberNode 
                     prop: isUpperCase(tag) ? 'update' : 'innerHTML',
                     value: split[0]
                 };
-                console.log('binding', binding);
+                //console.log('binding', binding);
                 if (split.length > 1) {
                     binding.prop = split[0];
                     binding.value = split[1];
@@ -311,7 +311,7 @@ export function parseMemberPropertyDeclaration(indentation: number): MemberNode 
                 nextToken();
                 break;
             case SyntaxKind.HashIdentifierToken:
-                console.log('==================parsing member2', name, indentation, lastIndentation)
+                //console.log('==================parsing member2', name, indentation, lastIndentation)
                 members.push(parseMemberPropertyDeclaration(lastIndentation));
                 break;
             case SyntaxKind.IndentationToken:
@@ -329,7 +329,7 @@ export function parseMemberPropertyDeclaration(indentation: number): MemberNode 
                 break;
         }
     }
-    if(members.length) console.log('==================members', name, members)
+    //if(members.length) console.log('==================members', name, members)
     return {
         kind: NodeKind.Member,
         name: name,

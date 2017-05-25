@@ -80,8 +80,7 @@ function emitMember(member, result) {
 }
 function emitMemberDecleration(member, parent) {
     var result = member.type === 'view' ? emitViewMember(member, parent) : emitTagMember(member, parent);
-    if (member.members.length)
-        console.log('----------------------', member.name, member.members);
+    //if(member.members.length) console.log('----------------------', member.name, member.members)
     member.members.forEach(function (member2) { return result += emitMemberDecleration(member2, member.name); });
     return result;
 }
@@ -135,7 +134,7 @@ function emitView(view, result) {
     return result;
 }
 function processFile(filePath) {
-    console.log('Processing:', filePath);
+    //console.log('Processing:', filePath);
     fs.readFile(filePath, function read(err, data) {
         if (err) {
             throw err;
@@ -166,4 +165,8 @@ if (process.argv.length > 2) {
 else {
     console.log('Watch path required.');
 }
+module.exports = {
+    parse: parser_1.parse,
+    emit: emit
+};
 //# sourceMappingURL=index.js.map

@@ -14,7 +14,7 @@ function tokenValue() {
 }
 function nextToken() {
     currentToken = scanner.scan();
-    console.log('nextToken22', currentToken, tokenValue());
+    //console.log('nextToken22', currentToken, tokenValue());
 }
 function parse(text) {
     scanner.setText(text);
@@ -83,7 +83,7 @@ function parseView() {
             parseMemberDeclaration(memberIndentation, classNames, styles, members, functions, properties);
         }
     }
-    console.log('end view2');
+    //console.log('end view2');
     if (token() !== 13 /* CodeToken */)
         nextToken();
     return {
@@ -248,7 +248,7 @@ function parseMemberPropertyDeclaration(indentation) {
                     prop: isUpperCase(tag) ? 'update' : 'innerHTML',
                     value: split[0]
                 };
-                console.log('binding', binding);
+                //console.log('binding', binding);
                 if (split.length > 1) {
                     binding.prop = split[0];
                     binding.value = split[1];
@@ -257,7 +257,7 @@ function parseMemberPropertyDeclaration(indentation) {
                 nextToken();
                 break;
             case 3 /* HashIdentifierToken */:
-                console.log('==================parsing member2', name, indentation, lastIndentation);
+                //console.log('==================parsing member2', name, indentation, lastIndentation)
                 members.push(parseMemberPropertyDeclaration(lastIndentation));
                 break;
             case 5 /* IndentationToken */:
@@ -275,8 +275,7 @@ function parseMemberPropertyDeclaration(indentation) {
                 break;
         }
     }
-    if (members.length)
-        console.log('==================members', name, members);
+    //if(members.length) console.log('==================members', name, members)
     return {
         kind: NodeKind.Member,
         name: name,

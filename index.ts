@@ -92,7 +92,7 @@ function emitMember(member: MemberNode, result: string): string {
 
 function emitMemberDecleration(member: MemberNode, parent?: string): string {
     let result = member.type === 'view' ? emitViewMember(member, parent) : emitTagMember(member, parent);
-    if(member.members.length) console.log('----------------------', member.name, member.members)
+    //if(member.members.length) console.log('----------------------', member.name, member.members)
     member.members.forEach((member2) => result += emitMemberDecleration(member2, member.name));
     return result;
 }
@@ -154,7 +154,7 @@ function emitView(view: ViewNode, result: string): string {
 
 
 function processFile(filePath: string) {
-    console.log('Processing:', filePath);
+    //console.log('Processing:', filePath);
     fs.readFile(filePath, function read(err, data) {
         if (err) {
             throw err;
@@ -186,3 +186,7 @@ if (process.argv.length > 2) {
     console.log('Watch path required.');
 }
 
+module.exports = {
+    parse: parse,
+    emit: emit
+};
