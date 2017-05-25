@@ -2,7 +2,7 @@
 
 import * as chokidar from "chokidar";
 import * as fs from "fs";
-import { parse, NodeKind, ProgNode, CodeNode, ViewNode, MemberNode, MemberStyle } from "./parser"
+import { parse, ParseResult, NodeKind, ProgNode, CodeNode, ViewNode, MemberNode, MemberStyle } from "./parser"
 
 
 function buildClassName(member: MemberNode): string {
@@ -161,8 +161,8 @@ function processFile(filePath: string) {
         }
 
         try {
-            let prog = parse(data.toString());
-            let transpiled = emit(prog);
+            let parseResult = parse(data.toString());
+            let transpiled = emit(parseResult.prog);
             let path = filePath.replace('.svml', '.ts');
             fs.writeFile(path, transpiled);
         } catch (msg) {

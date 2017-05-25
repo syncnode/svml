@@ -140,8 +140,8 @@ function processFile(filePath) {
             throw err;
         }
         try {
-            var prog = parser_1.parse(data.toString());
-            var transpiled = emit(prog);
+            var parseResult = parser_1.parse(data.toString());
+            var transpiled = emit(parseResult.prog);
             var path = filePath.replace('.svml', '.ts');
             fs.writeFile(path, transpiled);
         }

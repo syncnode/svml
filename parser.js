@@ -5,6 +5,7 @@ var parsingContext = 0 /* SourceElements */;
 // Share a single scanner across all calls to parse a source file.  This helps speed things
 // up by avoiding the cost of creating/compiling scanners over and over again.
 var scanner = scanner_1.createScanner();
+var diagnostics = [];
 var currentToken;
 function token() {
     return currentToken;
@@ -17,6 +18,7 @@ function nextToken() {
     //console.log('nextToken22', currentToken, tokenValue());
 }
 function parse(text) {
+    diagnostics = [];
     scanner.setText(text);
     // Prime the scanner
     nextToken();
@@ -35,7 +37,10 @@ function parse(text) {
             prog.push(parseView());
         }
     }
-    return prog;
+    return {
+        prog: prog,
+        diagnostics: diagnostics
+    };
 }
 exports.parse = parse;
 function parseView() {
@@ -312,7 +317,8 @@ function parseMemberFunctionDeclaration() {
 }
 function error(msg) {
     msg = 'Error: ' + msg;
-    throw (msg);
+    diagnostics.push(msg);
+    //throw(msg);
     //process.exit(1);
 }
 function s4() {

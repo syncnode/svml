@@ -12,6 +12,7 @@ let parsingContext: ParsingContext = ParsingContext.SourceElements;
 // Share a single scanner across all calls to parse a source file.  This helps speed things
 // up by avoiding the cost of creating/compiling scanners over and over again.
 const scanner = createScanner();
+let diagnostics: string[] = [];
 
 let currentToken: SyntaxKind;
 
@@ -26,7 +27,8 @@ function nextToken() {
     //console.log('nextToken22', currentToken, tokenValue());
 }
 
-export function parse(text: string): ProgNode[] {
+export function parse(text: string): ParseResult {
+    diagnostics = [];
     scanner.setText(text);
 
     // Prime the scanner
@@ -45,7 +47,10 @@ export function parse(text: string): ProgNode[] {
             prog.push(parseView());
         }
     }
-    return prog;
+    return { 
+        prog: prog,
+        diagnostics: diagnostics
+    };
 }
 
 
@@ -149,8 +154,13 @@ export enum NodeKind {
     Properties
 }
 
+export interface ParseResult {
+    prog: ProgNode[];
+    diagnostics: string[];
+}
+
 export interface ProgNode {
-    kind: NodeKind
+    kind: NodeKind;
     name: string;
 }
 
@@ -367,7 +377,8 @@ function parseMemberFunctionDeclaration(): MemberFunction {
 
 function error(msg: string) {
     msg = 'Error: ' + msg;
-    throw(msg);
+    diagnostics.push(msg);
+    //throw(msg);
     //process.exit(1);
 }
 
