@@ -378,7 +378,7 @@ function parseMemberFunctionDeclaration(): MemberFunction {
 function error(msg: string) {
     msg = 'Error: ' + msg;
     diagnostics.push(msg);
-    //throw(msg);
+    throw(msg);
     //process.exit(1);
 }
 
