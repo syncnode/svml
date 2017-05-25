@@ -216,7 +216,7 @@ function parseMemberPropertyDeclaration(indentation) {
     if (token() === 9 /* ColonIdentifierToken */) {
         // no name supplied
         name = guidShort();
-        tag = tokenValue();
+        tag = tokenValue().trim() || 'div';
     }
     else {
         name = tokenValue();
