@@ -19,7 +19,6 @@ function emitTagMember(member: MemberNode, parent?: string) {
         innerHTML: member.innerHTML,
         className: buildClassName(member)
     };
-    console.log('className', member.name, options.className, member.classNames);
 
     member.classNames.forEach((str: string) => options.className += ' ' + str);
     options.className = options.className.trim();

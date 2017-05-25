@@ -17,7 +17,6 @@ function emitTagMember(member, parent) {
         innerHTML: member.innerHTML,
         className: buildClassName(member)
     };
-    console.log('className', member.name, options.className, member.classNames);
     member.classNames.forEach(function (str) { return options.className += ' ' + str; });
     options.className = options.className.trim();
     var result = "\t" + member.name + " = this.add('" + member.tag + "', " + JSON.stringify(options) + ");\n";
