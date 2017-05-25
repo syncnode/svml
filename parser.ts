@@ -188,6 +188,7 @@ export interface MemberNode extends ProgNode {
     functions: MemberFunction[];
     bindings: MemberBinding[];
     members: MemberNode[];
+    guid: string;
 }
 
 export interface MemberStyle extends ProgNode {
@@ -229,6 +230,7 @@ export function parseMemberDeclaration(indentation: number, classNames: string[]
         case SyntaxKind.DotIdentifierToken:
             styles.push(parseMemberStyleDeclaration(indentation));
             break;
+        case SyntaxKind.ColonIdentifierToken:
         case SyntaxKind.HashIdentifierToken:
             members.push(parseMemberPropertyDeclaration(indentation));
             break;
@@ -270,8 +272,18 @@ function isUpperCase(str: string): boolean {
 }
 
 export function parseMemberPropertyDeclaration(indentation: number): MemberNode {
-    let name = tokenValue();
-    let tag = 'div';
+    let name;
+    let tag;
+    if(token() === SyntaxKind.ColonIdentifierToken) {
+        // no name supplied
+        name = guidShort();
+        tag = tokenValue();
+    }
+    else {
+        name = tokenValue();
+        tag = 'div';
+    }
+
     let options = '';
     let innerHTML = '';
     let classes: string[] = [];
@@ -351,7 +363,8 @@ export function parseMemberPropertyDeclaration(indentation: number): MemberNode 
         styles: styles,
         functions: functions,
         bindings: bindings,
-        members: members
+        members: members,
+        guid: guidShort()
     };
 }
 
@@ -376,8 +389,9 @@ function parseMemberFunctionDeclaration(): MemberFunction {
 }
 
 function error(msg: string) {
-    msg = 'Error: ' + msg;
-    diagnostics.push(msg);
+    const lineInfo = scanner.getLinePosInfo();
+    msg = 'Error [' + lineInfo[0] + ', ' + lineInfo[1] + ']: '  + msg;
+    //diagnostics.push(msg);
     throw(msg);
     //process.exit(1);
 }
@@ -390,7 +404,7 @@ function s4() {
         .substring(1);
 }
 
-function guidShort() {
+export function guidShort() {
     // Prepend with letter to ensure parsed as a string and preserve 
     // insertion order when calling Object.keys -JDK 12/1/2016
     // http://stackoverflow.com/questions/5525795/does-javascript-guarantee-object-property-order

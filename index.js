@@ -7,17 +7,19 @@ var parser_1 = require("./parser");
 function buildClassName(member) {
     var className = '';
     member.styles.forEach(function (style) {
-        className += " " + member.tag + "_" + member.name + "_" + style.name;
+        className += " " + member.tag + "-" + member.name + "-" + style.name + "-" + member.guid;
     });
-    return member.classNames + className;
+    return className;
 }
 function emitTagMember(member, parent) {
     var options = {
         parent: parent,
         innerHTML: member.innerHTML,
-        className: buildClassName(member),
+        className: buildClassName(member)
     };
+    console.log('className', member.name, options.className, member.classNames);
     member.classNames.forEach(function (str) { return options.className += ' ' + str; });
+    options.className = options.className.trim();
     var result = "\t" + member.name + " = this.add('" + member.tag + "', " + JSON.stringify(options) + ");\n";
     return result;
 }
@@ -115,7 +117,7 @@ function emitView(view, result) {
     });
     result += "}\n\n";
     function emitStyle(member, style) {
-        var name = member.tag + '_' + member.name + '_' + style.name;
+        var name = member.tag + '-' + member.name + '-' + style.name + '-' + member.guid;
         return "SyncView.addGlobalStyle('." + name + "', `" + style.text + "`);\n";
     }
     function emitStyles(member) {

@@ -8,19 +8,21 @@ import { parse, ParseResult, NodeKind, ProgNode, CodeNode, ViewNode, MemberNode,
 function buildClassName(member: MemberNode): string {
     let className = '';
     member.styles.forEach((style: MemberStyle) => {
-        className += ` ${member.tag}_${member.name}_${style.name}`;
+        className += ` ${member.tag}-${member.name}-${style.name}-${member.guid}`;
     });
-    return member.classNames + className;
+    return className;
 }
 
 function emitTagMember(member: MemberNode, parent?: string) {
     const options = {
         parent: parent,
         innerHTML: member.innerHTML,
-        className: buildClassName(member),
+        className: buildClassName(member)
     };
+    console.log('className', member.name, options.className, member.classNames);
 
     member.classNames.forEach((str: string) => options.className += ' ' + str);
+    options.className = options.className.trim();
     let result = `\t${member.name} = this.add('${member.tag}', ${JSON.stringify(options)});\n`;
     return result;
 }
@@ -130,7 +132,7 @@ function emitView(view: ViewNode, result: string): string {
     result += `}\n\n`;
 
     function emitStyle(member: MemberNode, style: MemberStyle): string {
-        let name = member.tag + '_' + member.name + '_' + style.name;
+        let name = member.tag + '-' + member.name + '-' + style.name + '-' + member.guid;
         return `SyncView.addGlobalStyle('.${name}', \`${style.text}\`);\n`
     }
 

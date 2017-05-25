@@ -16,9 +16,17 @@ function createScanner(text, start, length) {
     var tokenIsUnterminated = false;
     var precedingLineBreak = false;
     setText(text, start, length || text.length);
+    function getLinePosInfo() {
+        var substr = text.substr(0, pos);
+        var lines = substr.split('\n').length;
+        var lastLine = substr.lastIndexOf('\n');
+        var linePos = pos = lastLine;
+        return [lines, linePos];
+    }
     return {
         getStartPos: function () { return startPos; },
         getTextPos: function () { return pos; },
+        getLinePosInfo: getLinePosInfo,
         getToken: function () { return token; },
         getTokenPos: function () { return tokenPos; },
         getTokenText: function () { return text.substring(tokenPos, pos); },

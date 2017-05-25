@@ -50,9 +50,18 @@ export function createScanner(text: string = '', start: number = 0, length?: num
 
 	setText(text, start, length || text.length);
 
+	function getLinePosInfo() {
+		const substr = text.substr(0, pos);
+		const lines = substr.split('\n').length;
+		const lastLine = substr.lastIndexOf('\n');
+		const linePos = pos = lastLine;
+		return [lines, linePos];
+	}
+
 	return {
 		getStartPos: () => startPos,
 		getTextPos: () => pos,
+		getLinePosInfo: getLinePosInfo,
 		getToken: () => token,
 		getTokenPos: () => tokenPos,
 		getTokenText: () => text.substring(tokenPos, pos),

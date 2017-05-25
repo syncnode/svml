@@ -168,6 +168,7 @@ function parseMemberDeclaration(indentation, classNames, styles, members, functi
         case 11 /* DotIdentifierToken */:
             styles.push(parseMemberStyleDeclaration(indentation));
             break;
+        case 9 /* ColonIdentifierToken */:
         case 3 /* HashIdentifierToken */:
             members.push(parseMemberPropertyDeclaration(indentation));
             break;
@@ -210,8 +211,17 @@ function isUpperCase(str) {
     return str.charAt(0) === str.charAt(0).toUpperCase();
 }
 function parseMemberPropertyDeclaration(indentation) {
-    var name = tokenValue();
-    var tag = 'div';
+    var name;
+    var tag;
+    if (token() === 9 /* ColonIdentifierToken */) {
+        // no name supplied
+        name = guidShort();
+        tag = tokenValue();
+    }
+    else {
+        name = tokenValue();
+        tag = 'div';
+    }
     var options = '';
     var innerHTML = '';
     var classes = [];
@@ -292,7 +302,8 @@ function parseMemberPropertyDeclaration(indentation) {
         styles: styles,
         functions: functions,
         bindings: bindings,
-        members: members
+        members: members,
+        guid: guidShort()
     };
 }
 exports.parseMemberPropertyDeclaration = parseMemberPropertyDeclaration;
@@ -316,9 +327,10 @@ function parseMemberFunctionDeclaration() {
     };
 }
 function error(msg) {
-    msg = 'Error: ' + msg;
-    diagnostics.push(msg);
-    //throw(msg);
+    var lineInfo = scanner.getLinePosInfo();
+    msg = 'Error [' + lineInfo[0] + ', ' + lineInfo[1] + ']: ' + msg;
+    //diagnostics.push(msg);
+    throw (msg);
     //process.exit(1);
 }
 function s4() {
@@ -332,4 +344,5 @@ function guidShort() {
     // http://stackoverflow.com/questions/5525795/does-javascript-guarantee-object-property-order
     return 'a' + s4() + s4();
 }
+exports.guidShort = guidShort;
 //# sourceMappingURL=parser.js.map

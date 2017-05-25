@@ -13,7 +13,7 @@
                 "--debug=5858"
             ],
             "program": "${workspaceRoot}/index.js",
-            "args": ["../mrm/client/src"],
+            "args": ["c:/websites3/mrm/mrm/client/src"],
             "restart": true,
             "port": 5858,
             "console": "integratedTerminal",
