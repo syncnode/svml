@@ -247,7 +247,7 @@ export function parseMemberDeclaration(indentation: number, classNames: string[]
 export function parseMemberStyleDeclaration(indentation: number): MemberStyle {
     let name = tokenValue();
     let text = '';
-    if (name === undefined) name = guidShort();
+    if (!name) name = guidShort();
     nextToken();
     switch (token()) {
         case SyntaxKind.CodeToken:
@@ -280,7 +280,7 @@ export function parseMemberPropertyDeclaration(indentation: number): MemberNode 
         tag = tokenValue().trim() || 'div';
     }
     else {
-        name = tokenValue();
+        name = (tokenValue() || '').trim() || guidShort();
         tag = 'div';
     }
 
@@ -291,7 +291,6 @@ export function parseMemberPropertyDeclaration(indentation: number): MemberNode 
     let styles: MemberStyle[] = [];
     let bindings: MemberBinding[] = [];
     let members: MemberNode[] = [];
-    if (name === undefined) name = guidShort();
     nextToken();
     let lastIndentation = 0;
     while (!isStatementTerminator(indentation)) {
@@ -308,7 +307,7 @@ export function parseMemberPropertyDeclaration(indentation: number): MemberNode 
                 styles.push(parseMemberStyleDeclaration(indentation));
                 break;
             case SyntaxKind.ColonIdentifierToken:
-                tag = tokenValue();
+                tag = tokenValue().trim() || 'div';
                 nextToken();
                 break;
             case SyntaxKind.ArgumentsToken:

@@ -185,7 +185,7 @@ exports.parseMemberDeclaration = parseMemberDeclaration;
 function parseMemberStyleDeclaration(indentation) {
     var name = tokenValue();
     var text = '';
-    if (name === undefined)
+    if (!name)
         name = guidShort();
     nextToken();
     switch (token()) {
@@ -219,7 +219,7 @@ function parseMemberPropertyDeclaration(indentation) {
         tag = tokenValue().trim() || 'div';
     }
     else {
-        name = tokenValue();
+        name = (tokenValue() || '').trim() || guidShort();
         tag = 'div';
     }
     var options = '';
@@ -229,8 +229,6 @@ function parseMemberPropertyDeclaration(indentation) {
     var styles = [];
     var bindings = [];
     var members = [];
-    if (name === undefined)
-        name = guidShort();
     nextToken();
     var lastIndentation = 0;
     while (!isStatementTerminator(indentation)) {
@@ -247,7 +245,7 @@ function parseMemberPropertyDeclaration(indentation) {
                 styles.push(parseMemberStyleDeclaration(indentation));
                 break;
             case 9 /* ColonIdentifierToken */:
-                tag = tokenValue();
+                tag = tokenValue().trim() || 'div';
                 nextToken();
                 break;
             case 12 /* ArgumentsToken */:
